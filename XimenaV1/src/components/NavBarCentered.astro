@@ -5,19 +5,31 @@ const {
     link2 = "#",
     link2name = "Pricing",
 } = Astro.props;
-
-// Get the current URL
-const currentUrl = Astro.url.pathname;
 ---
 
 <div class="flex w-full p-4 justify-center items-center border-b border-gray-400">
     <div class="flex text-md md:text-2xl justify-center items-center">
         <p class="font-normal">
-            <a href={link1} class={currentUrl === link1 ? 'font-black' : ''}>{link1name}</a>
+            <a id="link1" href={link1}>{link1name}</a>
         </p>
         <p class="mx-8 text-gray-400">/</p>
         <p class="font-normal">
-            <a href={link2} class={currentUrl === link2 ? 'font-black' : ''}>{link2name}</a>
+            <a id="link2" href={link2}>{link2name}</a>
         </p>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentUrl = window.location.pathname;
+        const link1 = document.getElementById('link1');
+        const link2 = document.getElementById('link2');
+
+        if (link1.getAttribute('href') === currentUrl) {
+            link1.classList.add('font-black');
+        }
+        if (link2.getAttribute('href') === currentUrl) {
+            link2.classList.add('font-black');
+        }
+    });
+</script>
