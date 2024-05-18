@@ -16,7 +16,7 @@ import Layout from '../layouts/Layout.astro';
     </div>
     <script>
         const correctDate = "2022-05-15"; // Set your correct date here (format: YYYY-MM-DD)
-        document.getElementById('password-form').addEventListener('submit', function(event) {
+        document.getElementById('password-form')?.addEventListener('submit', function(event) {
             event.preventDefault();
             const enteredDate = document.getElementById('password').value;
             if (enteredDate === correctDate) {
