@@ -15,16 +15,24 @@ import Layout from '../layouts/Layout.astro';
         <div class="h-1/6"></div>
     </div>
     <script>
-        const correctDate = "2022-05-15"; // Set your correct date here (format: YYYY-MM-DD)
-        document.getElementById('password-form')?.addEventListener('submit', function(event) {
-            event.preventDefault();
-            const enteredDate = document.getElementById('password').value;
-            if (enteredDate === correctDate) {
-                localStorage.setItem('authenticated', 'true');
-                window.location.href = '/home'; // Redirect to your home page
-            } else {
-                document.getElementById('error-message').style.display = 'block';
+      const correctDate = "2022-05-15"; // Set your correct date here (format: YYYY-MM-DD)
+
+      document.getElementById('password-form')?.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const passwordInput = document.getElementById('password');
+        if (passwordInput) {
+          const enteredDate = (passwordInput as HTMLInputElement).value;
+          if (enteredDate === correctDate) {
+            localStorage.setItem('authenticated', 'true');
+            window.location.href = '/home'; // Redirect to your home page
+          } else {
+            const errorMessage = document.getElementById('error-message');
+            if (errorMessage) {
+              errorMessage.style.display = 'block';
             }
-        });
+          }
+        }
+      });
     </script>
 </Layout>
