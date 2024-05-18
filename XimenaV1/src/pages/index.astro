@@ -9,7 +9,7 @@ import Layout from '../layouts/Layout.astro';
             <div id="password-container" class="bg-white px-10 py-14 h-auto drop-shadow rounded-3xl flex flex-col items-center justify-center text-center">
                 <form id="password-form" class="flex flex-col">
                     <label for="password" class="text-lg font-semibold">Select When We Started Dating to Access the Site</label>
-                    <input class="mt-5 items-center flex justify-center" type="date" id="password" required>
+                    <input class="mt-5" type="date" id="password" required>
                     <button type="submit" class="px-4 py-1 bg-black text-white text-center rounded-2xl mt-5">Submit</button>
                 </form>
                 <p id="error-message" class="text-red-600 mt-5" style="display: none;">Incorrect Date, please try again.</p>
@@ -23,7 +23,7 @@ import Layout from '../layouts/Layout.astro';
       document.getElementById('password-form')?.addEventListener('submit', function(event) {
         event.preventDefault();
 
-        const passwordInput = document.getElementById('password');
+        const passwordInput = document.getElementById('password') as HTMLInputElement;
         if (passwordInput) {
           const enteredDate = passwordInput.value;
           if (enteredDate === correctDate) {
