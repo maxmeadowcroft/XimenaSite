@@ -1,0 +1,30 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="I love you Ximena">
+    <div class="h-screen flex flex-col justify-center items-center align-middle">
+        <h1 class="text-4xl lg:text-6xl font-bold mb-20">This site is only for Ximena</h1>
+        <div id="password-container" class="bg-white px-10 py-14 h-auto drop-shadow rounded-3xl flex flex-col items-center justify-center text-center">
+            <form id="password-form" class="flex flex-col">
+                <label for="password" class="text-lg font-semibold">Select When We Started Dating to Access the Site</label><input class="mt-5" type="date" id="password" required>
+                <button type="submit" class="px-4 py-1 bg-black text-white text-center rounded-2xl mt-5">Submit</button>
+            </form>
+            <p id="error-message" class="text-red-600 mt-5">Incorrect Date, please try again.</p>
+        </div>
+        <div class="h-1/6"></div>
+    </div>
+    <script>
+        const correctDate = "2022-05-15"; // Set your correct date here (format: YYYY-MM-DD)
+        document.getElementById('password-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const enteredDate = document.getElementById('password').value;
+            if (enteredDate === correctDate) {
+                localStorage.setItem('authenticated', 'true');
+                window.location.href = '/home'; // Redirect to your home page
+            } else {
+                document.getElementById('error-message').style.display = 'block';
+            }
+        });
+    </script>
+</Layout>

@@ -1,0 +1,49 @@
+---
+import Layout from '../layouts/Layout.astro';
+import NavBar from '../components/NavBarCentered.astro';
+const items = await Astro.glob('./items/*.md');
+
+// Get the current date
+const currentDate = new Date();
+const year = currentDate.getFullYear();
+const month = currentDate.getMonth() + 1; // Months are zero-indexed
+const day = currentDate.getDate();
+
+// Create a seed from the current date (YYYYMMDD format)
+const dateSeed = parseInt(`${year}${month}${day}`);
+
+// Use the seed to select a random item
+const randomIndex = dateSeed % items.length;
+const randomItem = items[randomIndex];
+
+const { Content } = randomItem;
+
+export const get = () => {
+  return {
+    body: JSON.stringify({ item: randomItem })
+  };
+};
+---
+
+<Layout title="You are so cute pookie">
+    <script>
+        if (!localStorage.getItem('authenticated')) {
+            window.location.href = '/'; // Redirect to password page if not authenticated
+        }
+    </script>
+    <div class="bg-stone-100 w-100 min-h-screen p-10">
+        <div class="min-h-screen bg-gray-100 p-4">
+            <NavBar
+                link1name="Love"
+                link1 = "/home"
+                link2name="Fan"
+                link2 = "/fan"
+            />
+            <div class="space-y-6">
+                <div class="prose prose-lg text-center mt-10">
+                    <Content />
+                </div>
+            </div>
+        </div>
+    </div>
+</Layout>

@@ -1,0 +1,32 @@
+---
+import Layout from "../layouts/Layout.astro";
+import NavBar from '../components/NavBarCenteredDark.astro';
+
+const audio = "/audio/fan.mp3";
+---
+
+<Layout title="You are so cute pookie">
+    <script>
+        if (!localStorage.getItem('authenticated')) {
+            window.location.href = '/'; // Redirect to password page if not authenticated
+        }
+        console.log('Welcome, browser console!');
+    </script>
+    <div class="bg-black w-100 min-h-screen p-10">
+        <div class="p-4">
+            <NavBar
+                link1name="Love"
+                link1="/home"
+                link2name="Fan"
+                link2="/fan"
+            />
+            <div class="container min-w-100px w-auto max-w-900 mx-auto mt-20">
+                <audio id="song" src={audio} class="hidden"></audio>
+                <div class="flex justify-center space-x-4">
+                    <button onclick="document.getElementById('song').play();" class="bg-slate-800 px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800">Play</button>
+                    <button onclick="document.getElementById('song').pause();" class="bg-slate-800 px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800">Pause</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</Layout>
