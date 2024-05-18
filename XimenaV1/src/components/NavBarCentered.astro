@@ -20,16 +20,19 @@ const {
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const currentUrl = window.location.pathname;
-        const link1 = document.getElementById('link1');
-        const link2 = document.getElementById('link2');
+    const currentUrl = window.location.pathname;
+    const link1 = document.querySelector('#link1');
+    const link2 = document.querySelector('#link2');
 
+    if (link1) {
         if (link1.getAttribute('href') === currentUrl) {
             link1.classList.add('font-black');
         }
+    }
+
+    if (link2) {
         if (link2.getAttribute('href') === currentUrl) {
             link2.classList.add('font-black');
         }
-    });
+    }
 </script>
