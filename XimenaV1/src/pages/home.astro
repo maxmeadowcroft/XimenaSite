@@ -7,7 +7,7 @@ const items = await Astro.glob('./items/*.md');
 const currentDate = new Date();
 const year = currentDate.getFullYear();
 const month = currentDate.getMonth() + 1; // Months are zero-indexed
-const day = currentDate.getDate() + 1; // Testing
+const day = currentDate.getDate() ;
 
 // Create a seed from the current date (YYYYMMDD format)
 const dateSeed = parseInt(`${year}${month}${day}`);
