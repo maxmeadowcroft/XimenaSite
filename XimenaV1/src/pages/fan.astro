@@ -21,7 +21,7 @@ const audio = "/audio/fan.mp3";
                 link2="/fan"
             />
             <div class="container min-w-100px w-auto max-w-900 mx-auto mt-20">
-                <audio id="song" src={audio} class="hidden"></audio>
+                <audio id="song" src={audio} class="hidden" loop></audio>
                 <div class="flex justify-center space-x-4">
                     <button onclick="document.getElementById('song').play();" class="bg-slate-800 px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800">Play</button>
                     <button onclick="document.getElementById('song').pause();" class="bg-slate-800 px-4 py-2 rounded-lg text-gray-400 hover:bg-gray-800">Pause</button>
