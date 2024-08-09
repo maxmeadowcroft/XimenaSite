@@ -20,7 +20,7 @@ import NavBar from '../components/NavBarCentered.astro';
                     <!-- JavaScript will populate this -->
                 </div>
                 <div class="flex items-center justify-center mt-5">
-                    <input type="text" id="guess-input" maxlength="5" class="w-2/3 p-2 border-b-2 border-white bg-transparent text-center text-xl outline-none" />
+                    <label for="guess-input"></label><input type="text" id="guess-input" maxlength="5" class="w-2/3 p-2 border-b-2 border-white bg-transparent text-center text-xl outline-none" />
                     <button id="submit-guess" class="ml-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded">Submit</button>
                 </div>
                 <p id="result-message" class="text-center text-lg mt-5"></p>
@@ -36,21 +36,24 @@ import NavBar from '../components/NavBarCentered.astro';
                 </ul>
             </div>
             <div id="initials-entry" class="text-center mt-5">
-                <input type="text" id="player-initials" maxlength="3" placeholder="Your initials" class="p-2 border-b-2 border-white bg-transparent text-center text-xl outline-none uppercase" />
+                <label for="player-initials"></label><input type="text" id="player-initials" maxlength="3" placeholder="Your initials" class="p-2 border-b-2 border-white bg-transparent text-center text-xl outline-none uppercase" />
                 <button id="save-score" class="ml-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded">Save Score</button>
             </div>
         </div>
     </div>
 
     <script is:inline>
-        document.addEventListener('DOMContentLoaded', () => {
-            const wordList = ["apple", "grape", "peach", "berry", "melon", "mango", "lemon", "cherry"];
-            let randomWord = wordList[Math.floor(Math.random() * wordList.length)].toLowerCase();
+        document.addEventListener('DOMContentLoaded', async () => {
             const maxGuesses = 6;
             let currentGuess = '';
             let guesses = [];
             let streak = parseInt(localStorage.getItem('wordleStreak') || '0', 10);
             let gameActive = true;
+
+            // Fetch random word from the server
+            const randomWordResponse = await fetch('/api/random-word');
+            const randomWordData = await randomWordResponse.json();
+            const randomWord = randomWordData.word.toLowerCase();
 
             console.log("Random word to guess:", randomWord);  // Debugging line
             document.getElementById('streak').innerText = streak;
@@ -76,13 +79,18 @@ import NavBar from '../components/NavBarCentered.astro';
             }
 
             function resetGame() {
-                randomWord = wordList[Math.floor(Math.random() * wordList.length)].toLowerCase();
+                fetchRandomWord();
                 guesses = [];
                 gameActive = true;
                 document.getElementById('result-message').innerText = '';
                 document.getElementById('guess-input').value = '';
                 renderGuesses();
-                console.log("Game reset. New word to guess:", randomWord);  // Debugging line
+            }
+
+            async function fetchRandomWord() {
+                const response = await fetch('/api/random-word');
+                const data = await response.json();
+                return data.word.toLowerCase();
             }
 
             async function updateLeaderboard(initials, streak) {
@@ -94,7 +102,7 @@ import NavBar from '../components/NavBarCentered.astro';
                     body: JSON.stringify({ initials, streak }),
                 });
                 const leaderboard = await response.json();
-                renderLeaderboard(leaderboard);
+                await renderLeaderboard(leaderboard);
             }
 
             async function renderLeaderboard() {
@@ -129,8 +137,6 @@ import NavBar from '../components/NavBarCentered.astro';
                     gameActive = false;
                 } else if (guesses.length >= maxGuesses) {
                     document.getElementById('result-message').innerText = `Game over! The word was ${randomWord}.`;
-                    streak = 0
-                    document.getElementById('result-message').innerText = `Game over! The word was ${randomWord}.`;
                     streak = 0;
                     localStorage.setItem('wordleStreak', '0');
                     gameActive = false;
@@ -154,7 +160,7 @@ import NavBar from '../components/NavBarCentered.astro';
             });
 
             resetGame();  // Initialize the first game
-            renderLeaderboard();  // Render leaderboard on page load
+            await renderLeaderboard();  // Render leaderboard on page load
         });
     </script>
 </Layout>

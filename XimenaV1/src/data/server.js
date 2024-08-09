@@ -9,6 +9,7 @@ const port = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
 const leaderboardFile = path.join(__dirname, 'leaderboard.json');
+const wordsFile = path.join(__dirname, '../words/wordle.txt');
 
 // Function to read leaderboard data
 function readLeaderboard() {
@@ -30,6 +31,18 @@ function writeLeaderboard(data) {
     }
 }
 
+// Function to get a random word from wordle.txt
+function getRandomWord() {
+    try {
+        const words = fs.readFileSync(wordsFile, 'utf8').split('\n').filter(Boolean);
+        const randomIndex = Math.floor(Math.random() * words.length);
+        return words[randomIndex];
+    } catch (err) {
+        console.error('Error reading words file:', err);
+        return 'error';
+    }
+}
+
 // API endpoint to get the leaderboard
 app.get('/api/leaderboard', (req, res) => {
     const leaderboard = readLeaderboard();
@@ -44,6 +57,12 @@ app.post('/api/leaderboard', (req, res) => {
     leaderboard = leaderboard.sort((a, b) => b.streak - a.streak).slice(0, 10); // Keep top 10 scores
     writeLeaderboard(leaderboard);
     res.json(leaderboard);
+});
+
+// API endpoint to get a random word
+app.get('/api/random-word', (req, res) => {
+    const randomWord = getRandomWord();
+    res.json({ word: randomWord });
 });
 
 // Start the server
