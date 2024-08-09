@@ -81,13 +81,23 @@ import NavBar from '../components/NavBarCentered.astro';
 
             // Function to reset the game
             async function resetGame() {
-                randomWord = await fetchRandomWord();
-                console.log("Random word to guess:", randomWord);  // Debugging line
-                guesses = [];
-                gameActive = true;
-                document.getElementById('result-message').innerText = '';
-                document.getElementById('guess-input').value = '';
-                renderGuesses();
+                try {
+                    const randomWordResponse = await fetch('/api/random-word');
+                    if (!randomWordResponse.ok) {
+                        throw new Error('Failed to fetch the random word.');
+                    }
+                    const randomWordData = await randomWordResponse.json();
+                    randomWord = randomWordData.word.toLowerCase();
+                    console.log("Random word to guess:", randomWord);  // Debugging line
+                    guesses = [];
+                    gameActive = true;
+                    document.getElementById('result-message').innerText = '';
+                    document.getElementById('guess-input').value = '';
+                    renderGuesses();
+                } catch (error) {
+                    console.error('Error resetting the game:', error);
+                    document.getElementById('result-message').innerText = 'Error starting the game. Please try again later.';
+                }
             }
 
             // Function to update the leaderboard

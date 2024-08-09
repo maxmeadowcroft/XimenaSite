@@ -35,11 +35,12 @@ function writeLeaderboard(data) {
 function getRandomWord() {
     try {
         const words = fs.readFileSync(wordsFile, 'utf8').split('\n').filter(Boolean);
+        if (words.length === 0) throw new Error("No words available in the file");
         const randomIndex = Math.floor(Math.random() * words.length);
         return words[randomIndex];
     } catch (err) {
         console.error('Error reading words file:', err);
-        return 'error';
+        return null; // Returning null if an error occurs
     }
 }
 
@@ -62,7 +63,11 @@ app.post('/api/leaderboard', (req, res) => {
 // API endpoint to get a random word
 app.get('/api/random-word', (req, res) => {
     const randomWord = getRandomWord();
-    res.json({ word: randomWord });
+    if (randomWord) {
+        res.json({ word: randomWord });
+    } else {
+        res.status(500).json({ error: "Could not fetch a random word." });
+    }
 });
 
 // Start the server
