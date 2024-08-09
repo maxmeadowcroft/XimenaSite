@@ -85,11 +85,28 @@ import NavBar from '../components/NavBarCentered.astro';
                 console.log("Game reset. New word to guess:", randomWord);  // Debugging line
             }
 
-            function updateLeaderboard(initials, streak) {
-                const leaderboard = document.getElementById('leaderboard-list');
-                const listItem = document.createElement('li');
-                listItem.innerText = `${initials.toUpperCase()}: ${streak}`;
-                leaderboard.appendChild(listItem);
+            async function updateLeaderboard(initials, streak) {
+                const response = await fetch('/api/leaderboard', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ initials, streak }),
+                });
+                const leaderboard = await response.json();
+                renderLeaderboard(leaderboard);
+            }
+
+            async function renderLeaderboard() {
+                const response = await fetch('/api/leaderboard');
+                const leaderboard = await response.json();
+                const leaderboardList = document.getElementById('leaderboard-list');
+                leaderboardList.innerHTML = '';
+                leaderboard.forEach(entry => {
+                    const listItem = document.createElement('li');
+                    listItem.innerText = `${entry.initials.toUpperCase()}: ${entry.streak}`;
+                    leaderboardList.appendChild(listItem);
+                });
             }
 
             document.getElementById('submit-guess').addEventListener('click', () => {
@@ -111,6 +128,8 @@ import NavBar from '../components/NavBarCentered.astro';
                     document.getElementById('result-message').innerText = 'You guessed correctly!';
                     gameActive = false;
                 } else if (guesses.length >= maxGuesses) {
+                    document.getElementById('result-message').innerText = `Game over! The word was ${randomWord}.`;
+                    streak = 0
                     document.getElementById('result-message').innerText = `Game over! The word was ${randomWord}.`;
                     streak = 0;
                     localStorage.setItem('wordleStreak', '0');
@@ -135,6 +154,7 @@ import NavBar from '../components/NavBarCentered.astro';
             });
 
             resetGame();  // Initialize the first game
+            renderLeaderboard();  // Render leaderboard on page load
         });
     </script>
 </Layout>
