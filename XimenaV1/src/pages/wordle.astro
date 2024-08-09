@@ -42,7 +42,10 @@ const randomWord = getRandomWord(wordList);
         const randomWord = "{{randomWord}}";
         let streak = parseInt(localStorage.getItem('wordleStreak') || '0', 10);
 
-        document.getElementById('streak').innerText = streak.toString();
+        const streakElement = document.getElementById('streak');
+        if (streakElement) {
+            streakElement.innerText = streak.toString();
+        }
 
         function checkGuess(guess: string) {
             if (guess === randomWord) {
@@ -52,6 +55,7 @@ const randomWord = getRandomWord(wordList);
             } else {
                 alert('Try again!');
             }
+
             const streakElement = document.getElementById('streak');
             if (streakElement) {
                 streakElement.innerText = streak.toString();
