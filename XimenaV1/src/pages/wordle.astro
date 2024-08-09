@@ -42,7 +42,7 @@ const randomWord = getRandomWord(wordList).toLowerCase();
     </div>
 
     <script is:inline>
-        const RandomWord = {{JSON.stringify(randomWord)}};
+        const RandomWord = `${randomWord}`;
         const maxGuesses = 6;
         let currentGuess = '';
         let guesses = [];
