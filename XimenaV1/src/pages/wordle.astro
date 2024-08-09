@@ -11,7 +11,6 @@ function getRandomWord(words: string[]): string {
 }
 
 const randomWord = getRandomWord(wordList).toLowerCase();
-const maxGuesses = 6;
 ---
 
 <Layout title="Wordle Game">
@@ -43,7 +42,7 @@ const maxGuesses = 6;
     </div>
     <script is:inline>
         const randomWord = "{{randomWord}}";
-        const maxGuesses = {{maxGuesses}};
+        const maxGuesses = 5;
         let currentGuess = '';
         let guesses = [];
         let streak = parseInt(localStorage.getItem('wordleStreak') || '0', 10);
