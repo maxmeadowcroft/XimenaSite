@@ -4,6 +4,8 @@ const {
     link1name = "Features",
     link2 = "#",
     link2name = "Pricing",
+    link3 = "#",
+    link3name = "Something",
 } = Astro.props;
 ---
 
@@ -15,6 +17,10 @@ const {
         <p class="mx-8 text-gray-400">/</p>
         <p class="font-normal">
             <a id="link2" href={link2}>{link2name}</a>
+        </p>
+        <p class="mx-8 text-gray-400">/</p>
+        <p class="font-normal">
+            <a id="link3" href={link3}>{link3name}</a>
         </p>
     </div>
 </div>
