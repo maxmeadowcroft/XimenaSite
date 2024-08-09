@@ -49,15 +49,16 @@ import NavBar from '../components/NavBarCentered.astro';
             let guesses = [];
             let streak = parseInt(localStorage.getItem('wordleStreak') || '0', 10);
             let gameActive = true;
+            let randomWord = '';
 
-            // Fetch random word from the server
-            const randomWordResponse = await fetch('/api/random-word');
-            const randomWordData = await randomWordResponse.json();
-            const randomWord = randomWordData.word.toLowerCase();
+            // Function to fetch a new random word
+            async function fetchRandomWord() {
+                const response = await fetch('/api/random-word');
+                const data = await response.json();
+                return data.word.toLowerCase();
+            }
 
-            console.log("Random word to guess:", randomWord);  // Debugging line
-            document.getElementById('streak').innerText = streak;
-
+            // Function to render the current guesses
             function renderGuesses() {
                 const guessesContainer = document.getElementById('guesses');
                 guessesContainer.innerHTML = '';
@@ -78,8 +79,10 @@ import NavBar from '../components/NavBarCentered.astro';
                 });
             }
 
-            function resetGame() {
-                fetchRandomWord();
+            // Function to reset the game
+            async function resetGame() {
+                randomWord = await fetchRandomWord();
+                console.log("Random word to guess:", randomWord);  // Debugging line
                 guesses = [];
                 gameActive = true;
                 document.getElementById('result-message').innerText = '';
@@ -87,12 +90,7 @@ import NavBar from '../components/NavBarCentered.astro';
                 renderGuesses();
             }
 
-            async function fetchRandomWord() {
-                const response = await fetch('/api/random-word');
-                const data = await response.json();
-                return data.word.toLowerCase();
-            }
-
+            // Function to update the leaderboard
             async function updateLeaderboard(initials, streak) {
                 const response = await fetch('/api/leaderboard', {
                     method: 'POST',
@@ -105,6 +103,7 @@ import NavBar from '../components/NavBarCentered.astro';
                 await renderLeaderboard(leaderboard);
             }
 
+            // Function to render the leaderboard
             async function renderLeaderboard() {
                 const response = await fetch('/api/leaderboard');
                 const leaderboard = await response.json();
@@ -117,6 +116,7 @@ import NavBar from '../components/NavBarCentered.astro';
                 });
             }
 
+            // Event listener for submitting a guess
             document.getElementById('submit-guess').addEventListener('click', () => {
                 if (!gameActive) return;
 
@@ -147,8 +147,10 @@ import NavBar from '../components/NavBarCentered.astro';
                 document.getElementById('streak').innerText = streak;
             });
 
+            // Event listener for resetting the game
             document.getElementById('reset-game').addEventListener('click', resetGame);
 
+            // Event listener for saving the score
             document.getElementById('save-score').addEventListener('click', () => {
                 const initials = document.getElementById('player-initials').value.toUpperCase();
                 if (initials.length === 3) {
@@ -159,8 +161,9 @@ import NavBar from '../components/NavBarCentered.astro';
                 }
             });
 
-            resetGame();  // Initialize the first game
-            await renderLeaderboard();  // Render leaderboard on page load
+            // Initialize the first game and render leaderboard on page load
+            await resetGame();
+            await renderLeaderboard();
         });
     </script>
 </Layout>
