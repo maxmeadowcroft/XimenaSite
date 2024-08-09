@@ -1,17 +1,15 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import NavBar from '../components/NavBarCentered.astro';
-import { useState, useEffect } from 'react';
+const validWords = await Astro.glob('./words/*.txt');
+const wordList = validWords.map(wordFile => wordFile.default as string);
 
-const validWords = await Astro.glob('./words/*.txt'); // Assuming you have a list of words in a txt file
-
-// Function to pick a random word from the list
 function getRandomWord(words: string[]): string {
     const randomIndex = Math.floor(Math.random() * words.length);
     return words[randomIndex];
 }
 
-const randomWord = getRandomWord(validWords);
+const randomWord = getRandomWord(wordList);
 ---
 
 <Layout title="Wordle Game">
@@ -42,22 +40,22 @@ const randomWord = getRandomWord(validWords);
     </div>
     <script>
         const randomWord = "{{randomWord}}";
-        let streak = localStorage.getItem('wordleStreak') || 0;
+        let streak = parseInt(localStorage.getItem('wordleStreak') || '0', 10);
 
-        document.getElementById('streak').innerText = streak;
+        document.getElementById('streak').innerText = streak.toString();
 
-        // Implement simple Wordle game logic here
-        // You can create input fields for guesses, compare them to the randomWord,
-        // and update the streak in localStorage based on the outcome.
-        function checkGuess(guess) {
+        function checkGuess(guess: string) {
             if (guess === randomWord) {
                 streak++;
-                localStorage.setItem('wordleStreak', streak);
+                localStorage.setItem('wordleStreak', streak.toString());
                 alert('You guessed correctly!');
             } else {
                 alert('Try again!');
             }
-            document.getElementById('streak').innerText = streak;
+            const streakElement = document.getElementById('streak');
+            if (streakElement) {
+                streakElement.innerText = streak.toString();
+            }
         }
     </script>
 </Layout>
