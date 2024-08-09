@@ -11,8 +11,14 @@ function getRandomWord(words: string[]): string {
 
 const randomWord = getRandomWord(wordList).toLowerCase();
 
-let guess = Astro.request.url.searchParams.get('guess') || '';
-let streak = parseInt(Astro.cookies.get('wordleStreak') || '0', 10);
+// Parse the URL to get the guess
+const url = new URL(Astro.request.url);
+const guess = url.searchParams.get('guess') || '';
+
+// Get the streak value from cookies
+const streakCookie = Astro.cookies.get('wordleStreak');
+let streak = parseInt(streakCookie?.value || '0', 10);
+
 let message = '';
 
 if (guess.length === 5) {
