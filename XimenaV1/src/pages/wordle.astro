@@ -14,35 +14,36 @@ const randomWord = getRandomWord(wordList).toLowerCase();
 ---
 
 <Layout title="Wordle Game">
-    <div class="bg-stone-100 w-100 min-h-screen p-10">
-        <div class="min-h-screen bg-gray-100 p-4">
-            <NavBar
-                    link1name="Love"
-                    link1="/home"
-                    link2name="Fan"
-                    link2="/fan"
-                    link3name="Wordle"
-                    link3="/wordle"
-            />
-            <div class="space-y-6 flex-col flex items-center text-center">
-                <div id="wordle-game" class="prose prose-lg text-center mt-10">
-                    <p>Guess the word:</p>
-                    <div id="guesses">
-                        <!-- JavaScript will populate this -->
-                    </div>
-                    <input type="text" id="guess-input" maxlength="5" />
-                    <button id="submit-guess">Submit Guess</button>
-                    <p id="result-message"></p>
+    <div class="min-h-screen bg-gray-900 text-white flex flex-col items-center p-5">
+        <NavBar
+                link1name="Love"
+                link1="/home"
+                link2name="Fan"
+                link2="/fan"
+                link3name="Wordle"
+                link3="/wordle"
+        />
+        <div class="w-full max-w-md mt-10">
+            <div id="wordle-game" class="space-y-6">
+                <p class="text-xl text-center">Guess the word:</p>
+                <div id="guesses" class="grid grid-cols-5 gap-4 text-center text-xl font-bold">
+                    <!-- JavaScript will populate this -->
                 </div>
-                <div id="streak-counter" class="prose prose-lg text-center mt-10">
-                    <p>Current Streak: <span id="streak"></span></p>
+                <div class="flex items-center justify-center mt-5">
+                    <input type="text" id="guess-input" maxlength="5" class="w-2/3 p-2 border-b-2 border-white bg-transparent text-center text-xl outline-none" />
+                    <button id="submit-guess" class="ml-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded">Submit</button>
                 </div>
+                <p id="result-message" class="text-center text-lg mt-5"></p>
+            </div>
+            <div id="streak-counter" class="text-center mt-10">
+                <p class="text-lg">Current Streak: <span id="streak" class="font-bold text-xl"></span></p>
             </div>
         </div>
     </div>
+
     <script is:inline>
-        const randomWord = "{{randomWord}}";
-        const maxGuesses = 5;
+        const RandomWord = {{JSON.stringify(randomWord)}};
+        const maxGuesses = 6;
         let currentGuess = '';
         let guesses = [];
         let streak = parseInt(localStorage.getItem('wordleStreak') || '0', 10);
@@ -60,12 +61,12 @@ const randomWord = getRandomWord(wordList).toLowerCase();
             document.getElementById('guess-input').value = '';
             renderGuesses();
 
-            if (currentGuess === randomWord) {
+            if (currentGuess === RandomWord) {
                 streak++;
                 localStorage.setItem('wordleStreak', streak.toString());
                 document.getElementById('result-message').innerText = 'You guessed correctly!';
             } else if (guesses.length >= maxGuesses) {
-                document.getElementById('result-message').innerText = `Game over! The word was ${randomWord}.`;
+                document.getElementById('result-message').innerText = `Game over! The word was ${RandomWord}.`;
                 streak = 0;
                 localStorage.setItem('wordleStreak', '0');
             } else {
@@ -79,27 +80,19 @@ const randomWord = getRandomWord(wordList).toLowerCase();
             const guessesContainer = document.getElementById('guesses');
             guessesContainer.innerHTML = '';
             guesses.forEach(guess => {
-                const guessDiv = document.createElement('div');
-                guessDiv.className = 'guess';
-
-                for (let i = 0; i < guess.length; i++) {
-                    const letter = guess[i];
+                guess.split('').forEach((letter, index) => {
                     const letterSpan = document.createElement('span');
-                    letterSpan.className = 'letter';
-
-                    if (letter === randomWord[i]) {
-                        letterSpan.style.backgroundColor = 'green';
-                    } else if (randomWord.includes(letter)) {
-                        letterSpan.style.backgroundColor = 'yellow';
+                    letterSpan.className = 'w-full h-12 flex items-center justify-center rounded bg-gray-800 text-white';
+                    if (letter === RandomWord[index]) {
+                        letterSpan.classList.add('bg-green-500');
+                    } else if (RandomWord.includes(letter)) {
+                        letterSpan.classList.add('bg-yellow-500');
                     } else {
-                        letterSpan.style.backgroundColor = 'gray';
+                        letterSpan.classList.add('bg-gray-500');
                     }
-
                     letterSpan.innerText = letter;
-                    guessDiv.appendChild(letterSpan);
-                }
-
-                guessesContainer.appendChild(guessDiv);
+                    guessesContainer.appendChild(letterSpan);
+                });
             });
         }
     </script>
