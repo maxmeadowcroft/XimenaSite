@@ -24,59 +24,41 @@ import NavBar from '../components/NavBarCentered.astro';
                     <button id="submit-guess" class="ml-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded">Submit</button>
                 </div>
                 <p id="result-message" class="text-center text-lg mt-5"></p>
+                <button id="reset-game" class="mt-5 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded">Reset Game</button>
             </div>
             <div id="streak-counter" class="text-center mt-10">
                 <p class="text-lg">Current Streak: <span id="streak" class="font-bold text-xl"></span></p>
+            </div>
+            <div id="leaderboard" class="mt-10">
+                <p class="text-lg text-center">Leaderboard:</p>
+                <ul id="leaderboard-list" class="list-none text-center">
+                    <!-- JavaScript will populate this -->
+                </ul>
+            </div>
+            <div id="initials-entry" class="text-center mt-5">
+                <input type="text" id="player-initials" maxlength="3" placeholder="Your initials" class="p-2 border-b-2 border-white bg-transparent text-center text-xl outline-none uppercase" />
+                <button id="save-score" class="ml-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded">Save Score</button>
             </div>
         </div>
     </div>
 
     <script is:inline>
         document.addEventListener('DOMContentLoaded', () => {
-            const wordList = ["apple", "grape", "peach", "berry", "melon", "mango", "lemon", "cherry"]; // Example word list
-            const randomWord = wordList[Math.floor(Math.random() * wordList.length)].toLowerCase();
+            const wordList = ["apple", "grape", "peach", "berry", "melon", "mango", "lemon", "cherry"];
+            let randomWord = wordList[Math.floor(Math.random() * wordList.length)].toLowerCase();
             const maxGuesses = 6;
             let currentGuess = '';
             let guesses = [];
             let streak = parseInt(localStorage.getItem('wordleStreak') || '0', 10);
+            let gameActive = true;
 
             console.log("Random word to guess:", randomWord);  // Debugging line
             document.getElementById('streak').innerText = streak;
 
-            document.getElementById('submit-guess').addEventListener('click', () => {
-                currentGuess = document.getElementById('guess-input').value.toLowerCase();
-                console.log("Submit button clicked! Guess:", currentGuess);  // Debugging line
-
-                if (currentGuess.length !== 5) {
-                    document.getElementById('result-message').innerText = 'Your guess must be 5 letters long!';
-                    return;
-                }
-
-                guesses.push(currentGuess);
-                document.getElementById('guess-input').value = '';
-                renderGuesses();
-
-                if (currentGuess === randomWord) {
-                    streak++;
-                    localStorage.setItem('wordleStreak', streak.toString());
-                    document.getElementById('result-message').innerText = 'You guessed correctly!';
-                } else if (guesses.length >= maxGuesses) {
-                    document.getElementById('result-message').innerText = `Game over! The word was ${randomWord}.`;
-                    streak = 0;
-                    localStorage.setItem('wordleStreak', '0');
-                } else {
-                    document.getElementById('result-message').innerText = 'Try again!';
-                }
-
-                document.getElementById('streak').innerText = streak;
-            });
-
             function renderGuesses() {
-                console.log("Rendering guesses...");  // Debugging line
                 const guessesContainer = document.getElementById('guesses');
                 guessesContainer.innerHTML = '';
                 guesses.forEach(guess => {
-                    console.log("Current guess:", guess);  // Debugging line
                     guess.split('').forEach((letter, index) => {
                         const letterSpan = document.createElement('span');
                         letterSpan.className = 'w-full h-12 flex items-center justify-center rounded bg-gray-800 text-white';
@@ -92,6 +74,67 @@ import NavBar from '../components/NavBarCentered.astro';
                     });
                 });
             }
+
+            function resetGame() {
+                randomWord = wordList[Math.floor(Math.random() * wordList.length)].toLowerCase();
+                guesses = [];
+                gameActive = true;
+                document.getElementById('result-message').innerText = '';
+                document.getElementById('guess-input').value = '';
+                renderGuesses();
+                console.log("Game reset. New word to guess:", randomWord);  // Debugging line
+            }
+
+            function updateLeaderboard(initials, streak) {
+                const leaderboard = document.getElementById('leaderboard-list');
+                const listItem = document.createElement('li');
+                listItem.innerText = `${initials.toUpperCase()}: ${streak}`;
+                leaderboard.appendChild(listItem);
+            }
+
+            document.getElementById('submit-guess').addEventListener('click', () => {
+                if (!gameActive) return;
+
+                currentGuess = document.getElementById('guess-input').value.toLowerCase();
+                if (currentGuess.length !== 5) {
+                    document.getElementById('result-message').innerText = 'Your guess must be 5 letters long!';
+                    return;
+                }
+
+                guesses.push(currentGuess);
+                document.getElementById('guess-input').value = '';
+                renderGuesses();
+
+                if (currentGuess === randomWord) {
+                    streak++;
+                    localStorage.setItem('wordleStreak', streak.toString());
+                    document.getElementById('result-message').innerText = 'You guessed correctly!';
+                    gameActive = false;
+                } else if (guesses.length >= maxGuesses) {
+                    document.getElementById('result-message').innerText = `Game over! The word was ${randomWord}.`;
+                    streak = 0;
+                    localStorage.setItem('wordleStreak', '0');
+                    gameActive = false;
+                } else {
+                    document.getElementById('result-message').innerText = 'Try again!';
+                }
+
+                document.getElementById('streak').innerText = streak;
+            });
+
+            document.getElementById('reset-game').addEventListener('click', resetGame);
+
+            document.getElementById('save-score').addEventListener('click', () => {
+                const initials = document.getElementById('player-initials').value.toUpperCase();
+                if (initials.length === 3) {
+                    updateLeaderboard(initials, streak);
+                    document.getElementById('player-initials').value = '';
+                } else {
+                    alert("Please enter 3 initials.");
+                }
+            });
+
+            resetGame();  // Initialize the first game
         });
     </script>
 </Layout>
