@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import NavBar from '../components/NavBarCentered.astro';
 const items = await Astro.glob('./items/*.md');
 
-// Simple hash function for the date seed
+// Simple hash function for the date seed with TypeScript type annotations
 function hashDateSeed(seed: string): number {
     let hash = 0, i: number, chr: number;
     for (i = 0; i < seed.length; i++) {
@@ -17,27 +17,16 @@ function hashDateSeed(seed: string): number {
 // Get the current date
 const currentDate = new Date();
 const year = currentDate.getFullYear();
-const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Pad with zero
-const day = String(currentDate.getDate()).padStart(2, '0'); // Pad with zero
+const month = currentDate.getMonth() + 1; // Months are zero-indexed
+const day = currentDate.getDate();
 
 // Create a seed from the current date (YYYYMMDD format)
 const dateSeed: string = `${year}${month}${day}`;
 const hashedSeed: number = hashDateSeed(dateSeed);
 
-// Ensure items are loaded
-if (items.length === 0) {
-    throw new Error('No items found in the ./items/ directory.');
-}
-
 // Use the hashed seed to select a random item
 const randomIndex: number = hashedSeed % items.length;
 const randomItem = items[randomIndex];
-
-// Log to check values (remove this in production)
-console.log(`Date seed: ${dateSeed}`);
-console.log(`Hashed seed: ${hashedSeed}`);
-console.log(`Selected index: ${randomIndex}`);
-console.log(`Selected item: ${randomItem}`);
 
 const { Content } = randomItem;
 
