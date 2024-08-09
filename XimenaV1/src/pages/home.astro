@@ -3,25 +3,37 @@ import Layout from '../layouts/Layout.astro';
 import NavBar from '../components/NavBarCentered.astro';
 const items = await Astro.glob('./items/*.md');
 
+// Simple hash function for the date seed
+function hashDateSeed(seed) {
+    let hash = 0, i, chr;
+    for (i = 0; i < seed.length; i++) {
+        chr   = seed.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
+}
+
 // Get the current date
 const currentDate = new Date();
 const year = currentDate.getFullYear();
 const month = currentDate.getMonth() + 1; // Months are zero-indexed
-const day = currentDate.getDate() ;
+const day = currentDate.getDate();
 
 // Create a seed from the current date (YYYYMMDD format)
-const dateSeed = parseInt(`${year}${month}${day}`);
+const dateSeed = `${year}${month}${day}`;
+const hashedSeed = hashDateSeed(dateSeed);
 
-// Use the seed to select a random item
-const randomIndex = dateSeed % items.length;
+// Use the hashed seed to select a random item
+const randomIndex = hashedSeed % items.length;
 const randomItem = items[randomIndex];
 
 const { Content } = randomItem;
 
 export const get = () => {
-  return {
-    body: JSON.stringify({ item: randomItem })
-  };
+    return {
+        body: JSON.stringify({ item: randomItem })
+    };
 };
 ---
 
@@ -34,10 +46,10 @@ export const get = () => {
     <div class="bg-stone-100 w-100 min-h-screen p-10">
         <div class="min-h-screen bg-gray-100 p-4">
             <NavBar
-                link1name="Love"
-                link1 = "/home"
-                link2name="Fan"
-                link2 = "/fan"
+                    link1name="Love"
+                    link1 = "/home"
+                    link2name="Fan"
+                    link2 = "/fan"
             />
             <div class="space-y-6 flex-col flex items-center text-center">
                 <div class="prose prose-lg text-center mt-10">
