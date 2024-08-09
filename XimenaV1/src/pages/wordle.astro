@@ -49,16 +49,12 @@ import NavBar from '../components/NavBarCentered.astro';
             let guesses = [];
             let streak = parseInt(localStorage.getItem('wordleStreak') || '0', 10);
             let gameActive = true;
-            let randomWord = '';
 
-            // Function to fetch a new random word
-            async function fetchRandomWord() {
-                const response = await fetch('/api/random-word');
-                const data = await response.json();
-                return data.word.toLowerCase();
-            }
+            // Hardcoded word for testing
+            let randomWord = 'apple';  // Replace with a word of your choice for testing
+            console.log("Random word to guess:", randomWord);  // Debugging line
+            document.getElementById('streak').innerText = streak;
 
-            // Function to render the current guesses
             function renderGuesses() {
                 const guessesContainer = document.getElementById('guesses');
                 guessesContainer.innerHTML = '';
@@ -79,46 +75,24 @@ import NavBar from '../components/NavBarCentered.astro';
                 });
             }
 
-            // Function to reset the game
-            async function resetGame() {
-                try {
-                    const randomWordResponse = await fetch('/api/random-word');
-                    if (!randomWordResponse.ok) {
-                        throw new Error('Failed to fetch the random word.');
-                    }
-                    const randomWordData = await randomWordResponse.json();
-                    randomWord = randomWordData.word.toLowerCase();
-                    console.log("Random word to guess:", randomWord);  // Debugging line
-                    guesses = [];
-                    gameActive = true;
-                    document.getElementById('result-message').innerText = '';
-                    document.getElementById('guess-input').value = '';
-                    renderGuesses();
-                } catch (error) {
-                    console.error('Error resetting the game:', error);
-                    document.getElementById('result-message').innerText = 'Error starting the game. Please try again later.';
-                }
+            function resetGame() {
+                randomWord = 'apple';  // Replace with a new word if needed
+                console.log("Random word to guess:", randomWord);  // Debugging line
+                guesses = [];
+                gameActive = true;
+                document.getElementById('result-message').innerText = '';
+                document.getElementById('guess-input').value = '';
+                renderGuesses();
             }
 
-            // Function to update the leaderboard
-            async function updateLeaderboard(initials, streak) {
-                const response = await fetch('/api/leaderboard', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ initials, streak }),
-                });
-                const leaderboard = await response.json();
-                await renderLeaderboard(leaderboard);
-            }
-
-            // Function to render the leaderboard
-            async function renderLeaderboard() {
-                const response = await fetch('/api/leaderboard');
-                const leaderboard = await response.json();
+            // Hardcoded leaderboard data for testing
+            function renderLeaderboard() {
                 const leaderboardList = document.getElementById('leaderboard-list');
                 leaderboardList.innerHTML = '';
+                const leaderboard = [
+                    { initials: 'ABC', streak: 5 },
+                    { initials: 'XYZ', streak: 3 },
+                ];  // Replace with your test data
                 leaderboard.forEach(entry => {
                     const listItem = document.createElement('li');
                     listItem.innerText = `${entry.initials.toUpperCase()}: ${entry.streak}`;
@@ -126,7 +100,6 @@ import NavBar from '../components/NavBarCentered.astro';
                 });
             }
 
-            // Event listener for submitting a guess
             document.getElementById('submit-guess').addEventListener('click', () => {
                 if (!gameActive) return;
 
@@ -157,23 +130,23 @@ import NavBar from '../components/NavBarCentered.astro';
                 document.getElementById('streak').innerText = streak;
             });
 
-            // Event listener for resetting the game
             document.getElementById('reset-game').addEventListener('click', resetGame);
 
-            // Event listener for saving the score
             document.getElementById('save-score').addEventListener('click', () => {
                 const initials = document.getElementById('player-initials').value.toUpperCase();
                 if (initials.length === 3) {
-                    updateLeaderboard(initials, streak);
+                    // Hardcoded leaderboard update logic for testing
+                    console.log(`Saving score for ${initials} with streak ${streak}`);
                     document.getElementById('player-initials').value = '';
+                    renderLeaderboard();
                 } else {
                     alert("Please enter 3 initials.");
                 }
             });
 
-            // Initialize the first game and render leaderboard on page load
-            await resetGame();
-            await renderLeaderboard();
+            resetGame();  // Initialize the first game
+            renderLeaderboard();  // Render leaderboard on page load
         });
+
     </script>
 </Layout>
