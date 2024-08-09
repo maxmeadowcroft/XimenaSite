@@ -9,15 +9,26 @@ function getRandomWord(words: string[]): string {
     return words[randomIndex];
 }
 
-const randomWord = getRandomWord(wordList);
+const randomWord = getRandomWord(wordList).toLowerCase();
+
+let guess = Astro.request.url.searchParams.get('guess') || '';
+let streak = parseInt(Astro.cookies.get('wordleStreak') || '0', 10);
+let message = '';
+
+if (guess.length === 5) {
+    if (guess === randomWord) {
+        streak++;
+        Astro.cookies.set('wordleStreak', streak.toString());
+        message = 'You guessed correctly!';
+    } else {
+        message = 'Try again!';
+    }
+} else if (guess) {
+    message = 'Your guess must be 5 letters long!';
+}
 ---
 
 <Layout title="Wordle Game">
-    <script>
-        if (!localStorage.getItem('authenticated')) {
-            window.location.href = '/'; // Redirect to password page if not authenticated
-        }
-    </script>
     <div class="bg-stone-100 w-100 min-h-screen p-10">
         <div class="min-h-screen bg-gray-100 p-4">
             <NavBar
@@ -30,36 +41,17 @@ const randomWord = getRandomWord(wordList);
             />
             <div class="space-y-6 flex-col flex items-center text-center">
                 <div id="wordle-game" class="prose prose-lg text-center mt-10">
-                    <!-- Wordle game will be implemented here -->
+                    <p>Guess the word:</p>
+                    <form method="get" action="/wordle">
+                        <input type="text" name="guess" maxlength="5" value={guess} />
+                        <button type="submit">Submit Guess</button>
+                    </form>
+                    <p id="result-message">{message}</p>
                 </div>
                 <div id="streak-counter" class="prose prose-lg text-center mt-10">
-                    <p>Current Streak: <span id="streak"></span></p>
+                    <p>Current Streak: <span id="streak">{streak}</span></p>
                 </div>
             </div>
         </div>
     </div>
-    <script>
-        const randomWord = "{{randomWord}}";
-        let streak = parseInt(localStorage.getItem('wordleStreak') || '0', 10);
-
-        const streakElement = document.getElementById('streak');
-        if (streakElement) {
-            streakElement.innerText = streak.toString();
-        }
-
-        function checkGuess(guess: string) {
-            if (guess === randomWord) {
-                streak++;
-                localStorage.setItem('wordleStreak', streak.toString());
-                alert('You guessed correctly!');
-            } else {
-                alert('Try again!');
-            }
-
-            const streakElement = document.getElementById('streak');
-            if (streakElement) {
-                streakElement.innerText = streak.toString();
-            }
-        }
-    </script>
 </Layout>
